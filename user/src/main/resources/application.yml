@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: "user-service"
+  mongodb:
+    database: user_service
+    uri: mongodb+srv://priynshu:admin@cluster0.z8o3jrm.mongodb.net/
+
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/user_service
+#    username: ${DB_USERNAME}
+#    password: ${DB_PASSWORD}
+#  jpa:
+##    database: POSTGRESQL
+##    database-platform: org.hibernate.dialect.PostgreSQLDialect
+#    hibernate:
+#      ddl-auto: update
+server:
+  port: 8082
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
