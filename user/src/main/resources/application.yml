@@ -3,7 +3,7 @@ spring:
     name: "user-service"
   mongodb:
     database: user_service
-    uri: mongodb+srv://priynshu:admin@cluster0.z8o3jrm.mongodb.net/
+    uri: ${MONGO_URL}
 
 #  datasource:
 #    url: jdbc:postgresql://localhost:5432/user_service
