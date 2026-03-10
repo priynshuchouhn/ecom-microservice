@@ -9,6 +9,12 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    dynamic: true
 server:
   port: 8083
 eureka:
@@ -27,3 +33,18 @@ logging:
     rollingpolicy:
       max-file-size: 5MB
       max-history: 7
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  tracing:
+    sampling:
+      probability: 1.0
+rabbitmq:
+  exchange:
+    name: order.exchange
+  queue:
+    name: order.queue
+  routing:
+    key: order.tracking
