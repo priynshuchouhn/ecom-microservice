@@ -41,11 +41,22 @@ services:
       - rabbitmq:/var/lib/rabbitmq
     networks:
       - postgres
+  redis:
+    image: redis:latest
+    container_name: redis_container
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis:/var/lib/redis
+    networks:
+      - postgres
 
 volumes:
   postgres:
   pgadmin:
   rabbitmq:
+  redis:
 
 networks:
   postgres:

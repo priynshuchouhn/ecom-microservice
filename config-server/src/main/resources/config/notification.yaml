@@ -1,4 +1,12 @@
 spring:
+  datasource:
+    url: jdbc:h2:mem:test
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
   rabbitmq:
     host: localhost
     port: 5672
@@ -18,6 +26,7 @@ logging:
   level:
     root: INFO
     com.ecom.notification: TRACE
+    io.github.resilience4j: TRACE
 resilience4j:
   ratelimiter:
     instances:

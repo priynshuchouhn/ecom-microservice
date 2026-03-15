@@ -25,6 +25,7 @@ logging:
   level:
     root: INFO
     com.ecom.order: TRACE
+    io.github.resilience4j: TRACE
   file:
     name: logs/${spring.application.name}.log
   logback:
