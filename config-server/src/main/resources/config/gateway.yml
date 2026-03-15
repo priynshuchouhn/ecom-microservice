@@ -1,3 +1,28 @@
+logging:
+  level:
+    root: INFO
+    com.ecom.gateway: TRACE
+  file:
+    name: logs/${spring.application.name}.log
+  logback:
+    rollingpolicy:
+      max-file-size: 5MB
+      max-history: 7
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+
 #spring:
 #  cloud:
 #    gateway:
@@ -26,3 +51,5 @@
 #              uri: http://localhost:8761
 #              predicates:
 #                - Path=/eureka/**
+
+

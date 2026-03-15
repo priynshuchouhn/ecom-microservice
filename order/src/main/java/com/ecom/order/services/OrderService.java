@@ -1,10 +1,7 @@
 package com.ecom.order.services;
 
 import com.ecom.order.clients.UserServiceClient;
-import com.ecom.order.dtos.OrderItem;
-import com.ecom.order.dtos.OrderItemDTO;
-import com.ecom.order.dtos.OrderResponse;
-import com.ecom.order.dtos.UserResponse;
+import com.ecom.order.dtos.*;
 import com.ecom.order.models.*;
 import com.ecom.order.repositories.OrderRepository;
 import com.ecom.order.models.OrderStatus;
@@ -61,11 +58,30 @@ public class OrderService {
 
         cartService.clearCart(userId);
 
-        rabbitTemplate.convertAndSend("order.exchange", "order.tracking",
-                Map.of("orderId", savedOrder.getId(),
-                        "userId", user.getId(),
-                        "status", "CREATED"));
+        //Publish Event to RabbitMQ
+        OrderCreatedEvent event = new OrderCreatedEvent(
+                savedOrder.getId(),
+                savedOrder.getUserId(),
+                savedOrder.getTotalAmount(),
+                savedOrder.getStatus(),
+                mapOrderItemToDto(savedOrder.getItems()),
+                savedOrder.getCreatedAt()
+        );
+
+        rabbitTemplate.convertAndSend("order.exchange", "order.tracking", event);
         return Optional.of(mapToOrderResponse(savedOrder));
+    }
+
+    private List<OrderItemDTO> mapOrderItemToDto(List<OrderItem> orderItems) {
+        return orderItems.stream().map(
+                orderItem -> new OrderItemDTO(
+                        orderItem.getId(),
+                        orderItem.getProductId(),
+                        orderItem.getQuantity(),
+                        orderItem.getPrice()
+//                        orderItem.getPrice().multiply(new BigDecimal((orderItem.getQuantity())),
+                )
+        ).toList();
     }
 
     private OrderResponse mapToOrderResponse(Order order) {

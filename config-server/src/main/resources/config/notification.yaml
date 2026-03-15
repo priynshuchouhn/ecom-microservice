@@ -1,0 +1,27 @@
+spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    dynamic: true
+server:
+  port: 8084
+rabbitmq:
+  exchange:
+    name: order.exchange
+  queue:
+    name: order.queue
+  routing:
+    key: order.tracking
+logging:
+  level:
+    root: INFO
+    com.ecom.notification: TRACE
+resilience4j:
+  ratelimiter:
+    instances:
+      ecomRateLimiter:
+        limit-refresh-period: 30s
+        limit-for-period: 1
+        timeout-duration: 0

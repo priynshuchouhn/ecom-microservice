@@ -30,10 +30,22 @@ services:
       - postgres
     networks:
       - postgres
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq_container
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+    networks:
+      - postgres
 
 volumes:
   postgres:
   pgadmin:
+  rabbitmq:
 
 networks:
   postgres:

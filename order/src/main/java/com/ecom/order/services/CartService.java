@@ -7,6 +7,8 @@ import com.ecom.order.dtos.ProductResponse;
 import com.ecom.order.dtos.UserResponse;
 import com.ecom.order.models.CartItem;
 import com.ecom.order.repositories.CartItemRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,25 +23,25 @@ public class CartService {
     private final CartItemRepository cartItemRepository;
     private final ProductServiceClient productServiceClient;
     private final UserServiceClient userServiceClient;
+    private int attempt =0;
 
-
+//    @CircuitBreaker(name = "productService", fallbackMethod = "addProductToCartFallback")
+    @Retry(name = "productService", fallbackMethod = "addProductToCartFallback")
     public boolean addProductToCart(String userId, CartItemRequest cartItemRequest) {
+        System.out.println("Attempting to add product to cart: " + attempt+ " Attempt");
+        attempt++;
         ProductResponse product = productServiceClient.fetchProductById(Long.valueOf(cartItemRequest.getProductId()));
         if (product == null) {
             return false;
         }
-        System.out.println("Product exist");
         if(product.getStockQuantity() < cartItemRequest.getQuantity()) {
             return false;
         }
-        System.out.println("Product stocks exist");
         UserResponse user = userServiceClient.fetchUserById(userId);
         System.out.println(user);
         if(user == null) {
             return false;
         }
-        System.out.println("User exist");
-//        User user = userOps.get();
         CartItem existingCartItem = cartItemRepository.findByUserIdAndProductId(userId, cartItemRequest.getProductId());
         if(existingCartItem != null) {
             existingCartItem.setProductId(String.valueOf(cartItemRequest.getProductId()));
@@ -56,6 +58,11 @@ public class CartService {
             cartItemRepository.save(cartItem);
             return true;
         }
+    }
+
+    private boolean addProductToCartFallback(String userId, CartItemRequest cartItemRequest, Exception e) {
+        System.out.println("Falling back to add product to cart");
+        return false;
     }
 
     public boolean deleteProductFromCart(String productId, String userId) {

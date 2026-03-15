@@ -4,8 +4,6 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   jpa:
-#    database: POSTGRESQL
-#    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true
@@ -38,6 +36,12 @@ management:
     web:
       exposure:
         include: "*"
+  endpoint:
+    health:
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true
   tracing:
     sampling:
       probability: 1.0
@@ -48,3 +52,26 @@ rabbitmq:
     name: order.queue
   routing:
     key: order.tracking
+resilience4j:
+  circuitbreaker:
+    instances:
+      productService:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        waitDurationInOpenState: 10s
+        failureRateThreshold: 50
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        slidingWindowType: count_based
+  retry:
+    instances:
+      productService:
+        max-attempts: 5
+        wait-duration: 500ms
+  ratelimiter:
+    instances:
+      ecomRateLimiter:
+        limit-refresh-period: 30s
+        limit-for-period: 1
+        timeout-duration: 0
